@@ -1,0 +1,64 @@
+# ─── Python ───────────────────────────────────────────────────────────────────
+.env
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.mypy_cache/
+.pytest_cache/
+htmlcov/
+dist/
+build/
+*.egg-info/
+*.egg
+
+# ─── Database ─────────────────────────────────────────────────────────────────
+*.db
+*.sqlite3
+*.sqlite
+
+# ─── Alembic ──────────────────────────────────────────────────────────────────
+# Keep alembic.ini and migrations folder but ignore compiled artifacts
+alembic/__pycache__/
+
+# ─── IDE ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.vs/
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ─── Docker ───────────────────────────────────────────────────────────────────
+.env.local
+.env.production
+
+# ─── Node (extension dev tooling if added later) ──────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

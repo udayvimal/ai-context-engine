@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Context Engine</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <img src="icons/icon48.png" alt="" class="logo" />
+    <div>
+      <h1>Context Engine</h1>
+      <p class="subtitle">Session Resume Tool</p>
+    </div>
+  </header>
+
+  <!-- Controls -->
+  <div class="field">
+    <input id="projectName" type="text" placeholder="Project name (auto-detected)"
+           maxlength="255" autocomplete="off" spellcheck="false" />
+  </div>
+
+  <div class="context-field">
+    <label class="context-label" for="additionalContext">
+      Extra context <span class="context-hint">— project path, OS, focus area</span>
+    </label>
+    <textarea id="additionalContext" class="context-textarea" rows="2" maxlength="2000"
+      placeholder="e.g. Project at C:\Users\AYUSH\my-app, Windows 11, focus on auth module"
+      spellcheck="false"></textarea>
+  </div>
+
+  <label class="toggle-row">
+    <input type="checkbox" id="scrollToggle" checked />
+    <span>Auto-scroll to load full conversation</span>
+  </label>
+
+  <button id="extractBtn" class="btn-primary">
+    <span id="btnText">Extract Full Context</span>
+    <span id="btnSpinner" class="spinner hidden"></span>
+  </button>
+
+  <div id="status" class="status hidden" role="alert"></div>
+
+  <!-- Results -->
+  <div id="results" class="results hidden">
+
+    <!-- Active file / function bar -->
+    <div id="activeBar" class="active-bar hidden">
+      <span id="activeFile" class="active-file"></span>
+      <span id="activeFunc" class="active-func"></span>
+    </div>
+
+    <!-- Tech stack tags -->
+    <div id="techBar" class="tech-bar hidden">
+      <span id="techLang"      class="tag tech"></span>
+      <span id="techFramework" class="tag tech"></span>
+      <span id="techDb"        class="tag tech"></span>
+      <span id="techRuntime"   class="tag tech"></span>
+      <div  id="techOther"     class="tag-row"></div>
+    </div>
+
+    <!-- 1. Next Action ─────────────────────────────────────────────────────── -->
+    <div class="section-header">Next Action</div>
+    <div class="card next-card">
+      <div id="nextAction" class="next-text"></div>
+    </div>
+
+    <!-- 2. Active Error ─────────────────────────────────────────────────────── -->
+    <div class="section-header">Active Error</div>
+    <div id="errorCard" class="card error-card">
+      <div id="errorMsg"  class="error-msg"></div>
+      <div class="error-meta">
+        <span id="errorFile"     class="mono"></span>
+        <span id="errorLine"     class="mono"></span>
+        <span id="errorResolved" class="badge-resolved"></span>
+      </div>
+      <div id="errorCause" class="fix-tried"></div>
+      <div id="errorFix"   class="fix-tried"></div>
+    </div>
+    <div id="noError" class="card success-card hidden">No errors — everything was working.</div>
+
+    <!-- 3. Last Code Written ─────────────────────────────────────────────────── -->
+    <div class="section-header" id="codeHeader">Last Code Written</div>
+    <div class="card code-card" id="codeCard">
+      <div class="code-meta">
+        <span id="codeLang"    class="badge-lang"></span>
+        <span id="codeFile"    class="mono muted"></span>
+        <span id="codePurpose" class="code-purpose"></span>
+      </div>
+      <pre id="codeBlock" class="code-block"></pre>
+    </div>
+
+    <!-- 4. Working ───────────────────────────────────────────────────────────── -->
+    <div class="section-header" id="workingHeader">Working</div>
+    <div class="card" id="workingCard">
+      <ul id="workingList" class="item-list check-list"></ul>
+    </div>
+
+    <!-- 5. Broken ────────────────────────────────────────────────────────────── -->
+    <div class="section-header" id="brokenHeader">Broken</div>
+    <div class="card broken-card" id="brokenCard">
+      <ul id="brokenList" class="item-list broken-list"></ul>
+    </div>
+
+    <!-- 6. Technical Decisions ──────────────────────────────────────────────── -->
+    <div class="section-header" id="decisionsHeader">Technical Decisions</div>
+    <div id="decisionsWrap"></div>
+
+    <!-- 7. Context Paragraph ────────────────────────────────────────────────── -->
+    <div class="section-header">Context</div>
+    <div class="card summary-card">
+      <div id="contextParagraph" class="summary-text"></div>
+    </div>
+
+    <!-- Files touched (compact) ─────────────────────────────────────────────── -->
+    <div class="section-header" id="filesHeader">Files Touched</div>
+    <div class="card" id="filesCard">
+      <ul id="filesTouched" class="item-list mono-list files"></ul>
+    </div>
+
+    <!-- Commands run ─────────────────────────────────────────────────────────── -->
+    <div class="section-header" id="cmdsHeader">Commands Run</div>
+    <div class="card" id="cmdsCard">
+      <ul id="cmdsList" class="item-list mono-list"></ul>
+    </div>
+
+    <!-- Resume Prompt ───────────────────────────────────────────────────────── -->
+    <div class="resume-section">
+      <div class="resume-header">
+        <span class="resume-title">Resume Prompt</span>
+        <span class="resume-hint">Paste into new Claude / ChatGPT → instant context</span>
+      </div>
+      <textarea id="resumePrompt" class="resume-textarea" readonly spellcheck="false"></textarea>
+      <button id="copyBtn" class="btn-copy">
+        <span id="copyText">Copy to Clipboard</span>
+      </button>
+    </div>
+
+    <div class="meta-row">
+      <span id="msgCount"></span>
+      <span id="sourceLabel" class="badge"></span>
+    </div>
+
+  </div><!-- /results -->
+
+  <!-- Settings -->
+  <div class="settings-row">
+    <label for="backendUrl">Backend</label>
+    <input id="backendUrl" type="text" value="http://localhost:8000" spellcheck="false" />
+  </div>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>

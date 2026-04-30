@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(venv\\\\Scripts\\\\pip install *)",
+      "Read(//c/Users/AYUSH/.claude/projects/c--Users-AYUSH-ai-context-engine/memory/**)",
+      "Read(//c/Users/AYUSH/.claude/projects/C--Users-AYUSH/memory/**)"
+    ]
+  }
+}
