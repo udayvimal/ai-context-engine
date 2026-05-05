@@ -1,0 +1,180 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DASHBOARD (dark theme)
+═══════════════════════════════════════════════════════════════════════════ */
+.nav-item {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 7px 10px; border: none; border-radius: 6px;
+  background: transparent; color: #5a5a72; font-size: 13px;
+  font-weight: 500; cursor: pointer; text-align: left;
+  transition: background 0.1s, color 0.1s; font-family: inherit;
+}
+.nav-item:hover  { background: #16161c; color: #c4c4d4; }
+.nav-item.active { background: #1c1c28; color: #e8e8f0; }
+.nav-item.danger:hover { background: #1a0d0d; color: #f87171; }
+
+.ctx-row {
+  display: flex; align-items: center; width: 100%;
+  padding: 14px 20px; border: none; background: transparent;
+  color: inherit; cursor: pointer; text-align: left;
+  border-bottom: 1px solid #18181f;
+  transition: background 0.1s; font-family: inherit;
+}
+.ctx-row:hover { background: #111118; }
+.ctx-row:last-child { border-bottom: none; }
+
+.icon-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border: 1px solid #22222e; border-radius: 7px;
+  background: transparent; color: #5a5a72; font-size: 12px; cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background 0.12s; font-family: inherit;
+}
+.icon-btn:hover    { border-color: #35354a; color: #c4c4d4; background: #14141c; }
+.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.copy-btn {
+  padding: 4px 11px; border: 1px solid #22222e; border-radius: 5px;
+  background: transparent; color: #5a5a72; font-size: 11px; cursor: pointer;
+  transition: border-color 0.12s, color 0.12s; font-family: inherit;
+}
+.copy-btn:hover  { border-color: #35354a; color: #c4c4d4; }
+.copy-btn.copied { border-color: #34d399; color: #34d399; }
+
+.install-hero-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border: none; border-radius: 8px;
+  background: #6c63ff; color: #fff; font-size: 13px; font-weight: 600;
+  cursor: not-allowed; font-family: inherit;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LANDING PAGE (dark theme)
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Navbar link */
+.lp-nav-link {
+  font-size: 14px; font-weight: 500; color: #7070a0;
+  text-decoration: none; transition: color 0.12s;
+}
+.lp-nav-link:hover { color: #f0f0f8; }
+
+/* Primary pill button */
+.lp-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 26px; background: #7c3aed; border: none;
+  border-radius: 50px; color: #fff; font-size: 15px; font-weight: 600;
+  cursor: not-allowed; font-family: inherit; text-decoration: none;
+  transition: background 0.15s;
+}
+.lp-btn-primary:hover { background: #6d28d9; }
+
+/* Secondary outlined button */
+.lp-btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 26px; background: transparent;
+  border: 1.5px solid #2a2a3e; border-radius: 50px;
+  color: #8080a0; font-size: 15px; font-weight: 500;
+  text-decoration: none; font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+.lp-btn-secondary:hover { border-color: #7c3aed; color: #a78bfa; }
+
+/* Feature tab pills */
+.lp-tab {
+  padding: 9px 20px; border-radius: 50px; font-size: 14px;
+  font-weight: 500; cursor: pointer; border: 1.5px solid #1e1e2e;
+  background: transparent; color: #606080; font-family: inherit;
+  transition: all 0.15s;
+}
+.lp-tab:hover       { border-color: #7c3aed; color: #a78bfa; }
+.lp-tab.lp-tab-active {
+  background: #7c3aed; color: #fff; border-color: #7c3aed;
+}
+
+/* Use-case cards */
+.lp-uc-card {
+  background: #0e0e16; border-radius: 16px;
+  border: 1px solid #1c1c28;
+  overflow: hidden; cursor: default;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.lp-uc-card:hover {
+  border-color: #35354a;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* Resource cards */
+.lp-resource-card {
+  background: #0e0e16; border: 1.5px solid #1c1c28; border-radius: 14px;
+  padding: 28px 24px; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.lp-resource-card:hover {
+  border-color: #7c3aed;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.15);
+}
+
+/* Footer link hover */
+.lp-footer-link {
+  font-size: 13px; color: #4a4a64; text-decoration: none;
+  transition: color 0.12s;
+}
+.lp-footer-link:hover { color: #e8e8f4; }
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+.pulse { animation: pulse-glow 2.5s ease-in-out infinite; }
+
+@keyframes float-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.float { animation: float-up 5s ease-in-out infinite; }
+
+/* CTA block on landing page */
+.cta-primary {
+  display: block; padding: 11px; border: none; border-radius: 8px;
+  background: #6c63ff; color: #fff; font-size: 13px; font-weight: 600;
+  text-decoration: none; text-align: center; transition: background 0.12s;
+  font-family: inherit;
+}
+.cta-primary:hover { background: #5a52e0; }
+.cta-secondary {
+  display: block; padding: 11px; border: 1px solid #22222e;
+  border-radius: 8px; background: transparent; color: #8888a0;
+  font-size: 13px; text-decoration: none; text-align: center;
+  transition: border-color 0.12s, color 0.12s;
+}
+.cta-secondary:hover { border-color: #35354a; color: #c4c4d4; }
+
+/* Responsive */
+@media (max-width: 960px) {
+  .hide-mobile  { display: none !important; }
+  .hero-grid    { flex-direction: column !important; text-align: center !important; }
+  .feat-block   { flex-direction: column !important; }
+  .feat-block.rev { flex-direction: column !important; }
+  .uc-grid      { grid-template-columns: 1fr 1fr !important; }
+  .footer-cols  { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 580px) {
+  .uc-grid      { grid-template-columns: 1fr !important; }
+  .steps-row    { flex-direction: column !important; }
+  .footer-cols  { grid-template-columns: 1fr !important; }
+}
