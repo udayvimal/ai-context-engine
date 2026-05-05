@@ -236,7 +236,7 @@ function HeroBanner() {
 }
 
 // ── Context list row ───────────────────────────────────────────────────────
-function ContextRow({ row, onClick }: { row: ContextRow; onClick: () => void }) {
+function ContextRow({ row, onClick, onDelete }: { row: ContextRow; onClick: () => void; onDelete: (e: React.MouseEvent) => void }) {
   const d = row.context_json;
   const ts = d.tech_stack || {};
   const techTags = [ts.language, ts.framework, ts.database].filter(Boolean) as string[];
@@ -268,6 +268,20 @@ function ContextRow({ row, onClick }: { row: ContextRow; onClick: () => void }) 
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0, marginLeft: "16px" }}>
         <SourceBadge source={d.source} />
         <span style={L.rowTime}>{timeAgo(row.created_at)}</span>
+        <button
+          onClick={onDelete}
+          title="Delete"
+          style={{
+            background: "none", border: "none", cursor: "pointer", padding: "4px",
+            color: "#3a3a52", lineHeight: 0, borderRadius: "4px",
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = "#ef4444")}
+          onMouseLeave={e => (e.currentTarget.style.color = "#3a3a52")}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M6 2h4l1 1H5L6 2zM2 4h12v1H3.5l.8 9h7.4l.8-9H13v-1H2V4zm4 2h1l.3 6H6.3L6 6zm3 0h1l-.3 6h-1L9 6z"/>
+          </svg>
+        </button>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="#3a3a4e">
           <path d="M6 3l5 5-5 5-1.1-1.1L8.8 8 4.9 4.1 6 3z"/>
         </svg>
@@ -278,13 +292,14 @@ function ContextRow({ row, onClick }: { row: ContextRow; onClick: () => void }) 
 
 // ── Context list view ──────────────────────────────────────────────────────
 function ContextListView({
-  contexts, loading, error, onSelect, onRefresh,
+  contexts, loading, error, onSelect, onRefresh, onDelete,
 }: {
   contexts: ContextRow[];
   loading: boolean;
   error: string | null;
   onSelect: (r: ContextRow) => void;
   onRefresh: () => void;
+  onDelete: (id: string) => void;
 }) {
   return (
     <>
@@ -329,7 +344,12 @@ function ContextListView({
         {!loading && contexts.length > 0 && (
           <div style={L.contextTable}>
             {contexts.map((row) => (
-              <ContextRow key={row.id} row={row} onClick={() => onSelect(row)} />
+              <ContextRow
+                key={row.id}
+                row={row}
+                onClick={() => onSelect(row)}
+                onDelete={(e) => { e.stopPropagation(); onDelete(row.id); }}
+              />
             ))}
           </div>
         )}
@@ -339,7 +359,7 @@ function ContextListView({
 }
 
 // ── Context detail view ────────────────────────────────────────────────────
-function ContextDetailView({ row, onBack }: { row: ContextRow; onBack: () => void }) {
+function ContextDetailView({ row, onBack, onDelete }: { row: ContextRow; onBack: () => void; onDelete: () => void }) {
   const d = row.context_json;
   const ts = d.tech_stack || {};
   const le = d.last_error || {};
@@ -357,12 +377,21 @@ function ContextDetailView({ row, onBack }: { row: ContextRow; onBack: () => voi
   return (
     <div style={{ padding: "0 28px 48px" }}>
       {/* Breadcrumb */}
-      <div style={L.breadcrumb}>
-        <button className="icon-btn" onClick={onBack} style={{ fontSize: "12px" }}>
-          ← All Contexts
+      <div style={{ ...L.breadcrumb, justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <button className="icon-btn" onClick={onBack} style={{ fontSize: "12px" }}>
+            ← All Contexts
+          </button>
+          <span style={L.breadcrumbSep}>/</span>
+          <span style={L.breadcrumbCurrent}>{d.project_name || "Unnamed Project"}</span>
+        </div>
+        <button
+          className="icon-btn"
+          onClick={onDelete}
+          style={{ fontSize: "12px", color: "#ef4444" }}
+        >
+          🗑 Delete
         </button>
-        <span style={L.breadcrumbSep}>/</span>
-        <span style={L.breadcrumbCurrent}>{d.project_name || "Unnamed Project"}</span>
       </div>
 
       {/* Detail header */}
@@ -505,6 +534,30 @@ function ContextDetailView({ row, onBack }: { row: ContextRow; onBack: () => voi
           </Section>
         )}
 
+        {/* Decisions */}
+        {(d.decisions?.length ?? 0) > 0 && (
+          <Section label="Technical Decisions" accent="#f59e0b">
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {d.decisions!.map((dec, i) => (
+                <div key={i} style={{
+                  background: "#0d0d10", borderRadius: "8px",
+                  padding: "10px 14px", border: "1px solid #1e1e28",
+                }}>
+                  <div style={{ fontSize: "13px", color: "#e4e4f0", fontWeight: 500, marginBottom: dec.why || dec.rejected ? "6px" : 0 }}>
+                    ✓ {dec.chose}
+                  </div>
+                  {dec.why && (
+                    <div style={{ fontSize: "11px", color: "#5a5a72" }}>Why: {dec.why}</div>
+                  )}
+                  {dec.rejected && (
+                    <div style={{ fontSize: "11px", color: "#4a3a3a", marginTop: "2px" }}>✗ Rejected: {dec.rejected}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
       </div>
     </div>
   );
@@ -580,6 +633,17 @@ export default function DashboardClient({ userId, email, name }: Props) {
 
   useEffect(() => { fetchContexts(); }, [fetchContexts]);
 
+  async function deleteContext(id: string) {
+    if (!confirm("Delete this context? This cannot be undone.")) return;
+    try {
+      await fetch(`${BACKEND}/api/v1/contexts/${id}?user_id=${encodeURIComponent(userId)}`, { method: "DELETE" });
+      setContexts((prev) => prev.filter((c) => c.id !== id));
+      if (selected?.id === id) backToList();
+    } catch {
+      alert("Delete failed — try again.");
+    }
+  }
+
   function openDetail(row: ContextRow) {
     setSelected(row);
     setView("detail");
@@ -612,10 +676,11 @@ export default function DashboardClient({ userId, email, name }: Props) {
             error={error}
             onSelect={openDetail}
             onRefresh={fetchContexts}
+            onDelete={deleteContext}
           />
         )}
         {view === "detail" && selected && (
-          <ContextDetailView row={selected} onBack={backToList} />
+          <ContextDetailView row={selected} onBack={backToList} onDelete={() => deleteContext(selected.id)} />
         )}
         {view === "settings" && (
           <SettingsView userId={userId} email={email} name={name} />

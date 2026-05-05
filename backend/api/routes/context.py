@@ -71,6 +71,21 @@ async def test_supabase():
     }
 
 
+@router.delete("/contexts/{context_id}", tags=["Context"])
+async def delete_context(context_id: str, user_id: str):
+    """Delete a single context row — only if it belongs to the requesting user."""
+    from services.supabase_client import get_supabase
+    sb = get_supabase()
+    if sb is None:
+        raise HTTPException(status_code=503, detail="Supabase not configured.")
+    try:
+        sb.table("contexts").delete().eq("id", context_id).eq("user_id", user_id).execute()
+        return {"deleted": True}
+    except Exception as exc:
+        logger.error("Failed to delete context %s: %s", context_id, exc)
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 @router.post("/process", response_model=EnhancedContextResponse, tags=["Context"])
 async def process_conversation(
     request: ProcessRequest,
