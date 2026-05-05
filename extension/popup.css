@@ -260,6 +260,15 @@ h1 { font-size: 14px; font-weight: 700; color: #fff; }
 }
 .settings-row input[type="text"]:focus { border-color: var(--accent); color: #7878a0; }
 
+/* ── Auth badge ─────────────────────────────────────────────────────────────── */
+.auth-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 10px; white-space: nowrap;
+}
+.auth-ok      { background: rgba(52,211,153,.12); color: var(--green); border: 1px solid rgba(52,211,153,.3); }
+.auth-no      { background: rgba(248,113,113,.10); color: var(--red);   border: 1px solid rgba(248,113,113,.25); }
+.auth-unknown { background: #1a1a28; color: var(--muted); border: 1px solid var(--border); }
+
 /* ── Utilities ─────────────────────────────────────────────────────────────── */
 .mono  { font-family: "SF Mono",Consolas,monospace; font-size: 11px; }
 .muted { color: var(--muted); }

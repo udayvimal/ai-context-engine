@@ -1,13 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "AI Context Engine",
+  "name": "ReSync AI",
   "version": "1.0.0",
   "description": "Extract structured project context from ChatGPT and Claude conversations in seconds.",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
   "host_permissions": [
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
-    "https://claude.ai/*"
+    "https://claude.ai/*",
+    "http://localhost:3000/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -28,6 +29,11 @@
         "https://claude.ai/*"
       ],
       "js": ["scroller.js", "content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://localhost:3000/*"],
+      "js": ["auth-bridge.js"],
       "run_at": "document_idle"
     }
   ],

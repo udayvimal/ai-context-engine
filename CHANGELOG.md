@@ -26,6 +26,61 @@ Keep entries in **newest-first** order. One block per work session is fine.
 
 ---
 
+## [2026-05-04] — Ayush (udayvimal) — Step 2: Auth → Extension bridge
+
+### Files Changed
+- `extension/manifest.json` — added `http://localhost:3000/*` to `host_permissions`; added `auth-bridge.js` content script for localhost:3000
+- `extension/auth-bridge.js` — **NEW** — reads `clerk_user_id` from dashboard localStorage, writes to `chrome.storage.local`
+- `extension/background.js` — reads `clerk_user_id` from `chrome.storage.local` before every POST; sends `user_id` field to backend
+- `extension/popup.html` — added `authBadge` div in header
+- `extension/popup.css` — added `.auth-badge`, `.auth-ok`, `.auth-no`, `.auth-unknown` styles
+- `extension/popup.js` — added `updateAuthBadge()` to show login status in popup header
+- `backend/api/models/schemas.py` — added optional `user_id` field to `ProcessRequest`
+- `backend/api/routes/context.py` — added `logger.info` that logs `user_id` on every extraction request
+
+### What Was Added
+- **Auth bridge flow:** dashboard writes `clerk_user_id` to `localStorage` → `auth-bridge.js` copies to `chrome.storage.local` → `background.js` reads it → sends with every extraction POST
+- Popup header now shows a green "Logged in" or red "Not logged in" badge; hover shows the full user ID
+- Backend logs `user_id` on every `/api/v1/process` call so you can verify in server console
+- `user_id` is now a field in every extraction request body
+
+### How to verify it's working
+1. Open `http://localhost:3000` and log in with Clerk
+2. Open browser console on that tab — should see `[AI Context Engine] User ID synced to extension: user_xxx`
+3. Open the extension popup — badge should say **Logged in** (green)
+4. Open a ChatGPT/Claude conversation and click Extract
+5. Check the FastAPI server logs — should print `user_id='user_xxx'`
+
+---
+
+## [2026-05-04] — Ayush (udayvimal)
+
+### Files Changed
+- `frontend/package.json` — **NEW** — Next.js 14 + Clerk 5 + TypeScript dependencies
+- `frontend/next.config.js` — **NEW** — minimal Next.js config
+- `frontend/tsconfig.json` — **NEW** — TypeScript config for Next.js App Router
+- `frontend/middleware.ts` — **NEW** — Clerk middleware, protects `/dashboard` route
+- `frontend/app/layout.tsx` — **NEW** — root layout wrapping app in `ClerkProvider`
+- `frontend/app/page.tsx` — **NEW** — root route: redirects logged-in users to `/dashboard`, others to `/sign-in`
+- `frontend/app/sign-in/[[...sign-in]]/page.tsx` — **NEW** — Clerk hosted sign-in UI
+- `frontend/app/sign-up/[[...sign-up]]/page.tsx` — **NEW** — Clerk hosted sign-up UI
+- `frontend/app/dashboard/page.tsx` — **NEW** — server component, reads `userId` from Clerk auth, passes to client
+- `frontend/app/dashboard/DashboardClient.tsx` — **NEW** — client component, stores `userId` in `localStorage`, renders user info + logout
+- `frontend/env.local.example` — **NEW** — template for Clerk API keys
+
+### What Was Added
+- Full Next.js 14 App Router frontend in `frontend/`
+- Clerk authentication — sign-in, sign-up, protected dashboard, sign-out
+- On login, `user.id` (Clerk `userId`) is stored in `localStorage` under key `clerk_user_id` — extension can read this later to link extractions to a user account
+- Dashboard shows: user avatar initial, name, email, full `userId`, green "logged in" status dot
+- Middleware auto-redirects unauthenticated users away from `/dashboard` back to `/sign-in`
+- Root `/` redirects: logged-in → `/dashboard`, logged-out → `/sign-in`
+
+### What Was Added (project level)
+- `frontend/` directory — third pillar of the product (Extension → Backend → **Website**)
+
+---
+
 ## [2026-05-01] — Ayush (udayvimal)
 
 ### Files Changed

@@ -26,6 +26,51 @@ async def health():
     return {"status": "ok"}
 
 
+@router.get("/contexts", tags=["Context"])
+async def get_user_contexts(user_id: str):
+    """Return all saved contexts for a user, newest first."""
+    from services.supabase_client import get_supabase
+    sb = get_supabase()
+    if sb is None:
+        raise HTTPException(status_code=503, detail="Supabase not configured.")
+    try:
+        result = (
+            sb.table("contexts")
+            .select("id, user_id, context_json, created_at")
+            .eq("user_id", user_id)
+            .order("created_at", desc=True)
+            .execute()
+        )
+        return {"contexts": result.data}
+    except Exception as exc:
+        logger.error("Failed to fetch contexts: %s", exc)
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/test-supabase", tags=["Health"])
+async def test_supabase():
+    """Verify Supabase env vars are loaded and a test insert succeeds."""
+    import os
+    url = os.getenv("SUPABASE_URL", "")
+    key = os.getenv("SUPABASE_KEY", "")
+
+    if not url or not key:
+        return {
+            "ok": False,
+            "error": "SUPABASE_URL or SUPABASE_KEY not set in this process",
+            "url_set": bool(url),
+            "key_set": bool(key),
+        }
+
+    from services.supabase_client import save_context
+    ok = save_context(user_id="__test__", context_json={"test": True})
+    return {
+        "ok": ok,
+        "url": url[:30] + "…",
+        "key_prefix": key[:12] + "…",
+    }
+
+
 @router.post("/process", response_model=EnhancedContextResponse, tags=["Context"])
 async def process_conversation(
     request: ProcessRequest,
@@ -37,6 +82,11 @@ async def process_conversation(
         raise HTTPException(status_code=422, detail="Maximum 500 messages allowed.")
 
     try:
+        logger.info(
+            "Processing request — project=%r  user_id=%r  messages=%d",
+            request.project_name, request.user_id, len(request.messages)
+        )
+
         raw = _llm.extract_context(
             messages=request.messages,
             project_name=request.project_name,
@@ -115,12 +165,19 @@ async def process_conversation(
             context_paragraph = raw.get("context_paragraph") or "",
         )
 
-        # Persist best-effort — never fail the API on a DB error
+        # Save to local SQLite/Postgres (existing)
         try:
             from services.storage import StorageService
             StorageService(db).save_context(request, response)
         except Exception as db_exc:
             logger.warning("DB save failed (non-fatal): %s", db_exc)
+
+        # Save to Supabase — linked to the authenticated user
+        from services.supabase_client import save_context as supabase_save
+        supabase_save(
+            user_id      = request.user_id,
+            context_json = response.model_dump(),
+        )
 
         return response
 

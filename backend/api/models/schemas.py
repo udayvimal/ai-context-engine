@@ -22,6 +22,7 @@ class ProcessRequest(BaseModel):
     project_name:       str           = Field(default="Unnamed Project", max_length=255)
     source:             str           = Field(default="unknown", max_length=50)
     additional_context: str           = Field(default="", max_length=2000)
+    user_id:            Optional[str] = Field(default=None, max_length=255)
 
 
 # ── Nested response models ────────────────────────────────────────────────────

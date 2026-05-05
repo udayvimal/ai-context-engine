@@ -11,6 +11,55 @@ const scrollToggle  = document.getElementById("scrollToggle");
 const backendInput  = document.getElementById("backendUrl");
 const additionalCtx = document.getElementById("additionalContext");
 
+// ── Auth badge — show login status from clerk ─────────────────────────────────
+const authBadge = document.getElementById("authBadge");
+
+function updateAuthBadge() {
+  chrome.storage.local.get(["user_id"], ({ user_id }) => {
+    if (user_id) {
+      authBadge.textContent = "Logged in";
+      authBadge.className   = "auth-badge auth-ok";
+      authBadge.title       = `user_id: ${user_id}`;
+    } else {
+      authBadge.textContent = "Not logged in";
+      authBadge.className   = "auth-badge auth-no";
+      authBadge.title       = "Open localhost:3000 and log in first";
+    }
+  });
+}
+
+// Actively read user_id from any open dashboard tab via scripting API.
+// This works even if auth-bridge.js never ran (tab was open before extension loaded).
+async function syncUserIdNow() {
+  try {
+    const tabs = await chrome.tabs.query({ url: "http://localhost:3000/*" });
+    // No dashboard tab open, or tab is on an error page — use cached value
+    if (!tabs.length || tabs[0].status !== "complete") return;
+
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      func:   () => localStorage.getItem("user_id"),
+    });
+
+    const userId = results?.[0]?.result;
+    console.log("[AI Context Engine] Synced user_id from dashboard:", userId);
+
+    if (userId) {
+      await chrome.storage.local.set({ user_id: userId });
+    } else {
+      await chrome.storage.local.remove("user_id");
+    }
+  } catch (_) {
+    // Tab not injectable (error page, dev server down) — cached user_id still works
+  } finally {
+    updateAuthBadge();
+  }
+}
+
+// Show cached badge immediately, then sync latest value from dashboard tab
+updateAuthBadge();
+syncUserIdNow();
+
 // ── Persist settings ──────────────────────────────────────────────────────────
 chrome.storage.sync.get(["backendUrl", "scrollEnabled"], (s) => {
   if (s.backendUrl) backendInput.value = s.backendUrl;

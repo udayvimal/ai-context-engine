@@ -3,7 +3,23 @@
     "allow": [
       "Bash(venv\\\\Scripts\\\\pip install *)",
       "Read(//c/Users/AYUSH/.claude/projects/c--Users-AYUSH-ai-context-engine/memory/**)",
-      "Read(//c/Users/AYUSH/.claude/projects/C--Users-AYUSH/memory/**)"
+      "Read(//c/Users/AYUSH/.claude/projects/C--Users-AYUSH/memory/**)",
+      "Bash(npm --version)",
+      "Bash(venv/Scripts/pip install *)",
+      "Bash(venv/Scripts/python -c \"import supabase; print\\('supabase', supabase.__version__\\)\")",
+      "Bash(npm install *)",
+      "Bash(venv/Scripts/python -c ' *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\AYUSH\\\\ai-context-engine\\\\frontend\\\\\" -Recurse | Select-Object -Property FullName, PSIsContainer | Sort-Object FullName)",
+      "Read(//c/c/Users/AYUSH/ai-context-engine/**)",
+      "Bash(awk '{print $NF}')",
+      "Bash(npx tsc *)",
+      "WebFetch(domain:www.atlassian.com)",
+      "PowerShell(Get-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "PowerShell(Start-Process -FilePath \"cmd.exe\" -ArgumentList \"/c cd /d C:\\\\Users\\\\AYUSH\\\\ai-context-engine\\\\frontend && npx next dev --port 3000\" -WindowStyle Normal)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\AYUSH\\ai-context-engine"
     ]
   }
 }
