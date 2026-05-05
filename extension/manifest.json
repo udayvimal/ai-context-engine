@@ -8,7 +8,9 @@
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
     "https://claude.ai/*",
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "https://ai-context-engine-iota.vercel.app/*",
+    "https://ai-context-engine-production.up.railway.app/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -32,7 +34,10 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["http://localhost:3000/*"],
+      "matches": [
+        "http://localhost:3000/*",
+        "https://ai-context-engine-iota.vercel.app/*"
+      ],
       "js": ["auth-bridge.js"],
       "run_at": "document_idle"
     }

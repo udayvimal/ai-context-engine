@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
   // Read user_id synced by auth-bridge.js from the dashboard
   chrome.storage.local.get(["user_id"], ({ user_id }) => {
-    console.log("[AI Context Engine] Sending request — user_id:", user_id ?? "anonymous");
+    console.log("[ReSync AI] Sending request — user_id:", user_id ?? "anonymous");
 
     fetch(`${backendUrl}/api/v1/process`, {
       method: "POST",

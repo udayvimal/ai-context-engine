@@ -6,7 +6,7 @@ function syncUserId() {
   const userId = localStorage.getItem("user_id");
   if (userId) {
     chrome.storage.local.set({ user_id: userId }, () => {
-      console.log("[AI Context Engine] user_id synced:", userId);
+      console.log("[ReSync AI] user_id synced:", userId);
     });
     return true;
   }
@@ -25,7 +25,7 @@ window.addEventListener("user_id_ready", (e) => {
   const userId = e.detail?.userId;
   if (userId) {
     chrome.storage.local.set({ user_id: userId }, () => {
-      console.log("[AI Context Engine] user_id synced via event:", userId);
+      console.log("[ReSync AI] user_id synced via event:", userId);
     });
   }
 });

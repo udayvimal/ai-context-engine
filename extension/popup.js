@@ -1,4 +1,4 @@
-const BACKEND_DEFAULT = "http://localhost:8000";
+const BACKEND_DEFAULT = "https://ai-context-engine-production.up.railway.app";
 
 // ── Refs ──────────────────────────────────────────────────────────────────────
 const extractBtn    = document.getElementById("extractBtn");
@@ -23,7 +23,7 @@ function updateAuthBadge() {
     } else {
       authBadge.textContent = "Not logged in";
       authBadge.className   = "auth-badge auth-no";
-      authBadge.title       = "Open localhost:3000 and log in first";
+      authBadge.title       = "Open the ReSync AI dashboard and log in first";
     }
   });
 }
@@ -32,7 +32,12 @@ function updateAuthBadge() {
 // This works even if auth-bridge.js never ran (tab was open before extension loaded).
 async function syncUserIdNow() {
   try {
-    const tabs = await chrome.tabs.query({ url: "http://localhost:3000/*" });
+    const DASHBOARD_PATTERNS = ["http://localhost:3000/*", "https://ai-context-engine-iota.vercel.app/*"];
+    let tabs = [];
+    for (const pattern of DASHBOARD_PATTERNS) {
+      const found = await chrome.tabs.query({ url: pattern });
+      if (found.length) { tabs = found; break; }
+    }
     // No dashboard tab open, or tab is on an error page — use cached value
     if (!tabs.length || tabs[0].status !== "complete") return;
 
